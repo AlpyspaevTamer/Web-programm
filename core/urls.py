@@ -36,5 +36,4 @@ urlpatterns = [
     path('themes/combinatorics/', combinatorics_view, name='combinatorics'),   
     path('themes/economicsstatistics/', economicsstatistics_view, name='economicsstatistics'),
     path('themes/vectorscoordinates/', vectorscoordinates_view, name='vectorscoordinates'),   
-
 ]
