@@ -27,7 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+import os
 
+# Получение порта из переменной окружения
+PORT = os.getenv('PORT', 8000)
 # Application definition
 
 INSTALLED_APPS = [
@@ -56,10 +59,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'core' / 'static', 
-    str(BASE_DIR / 'core' / 'static'),
-]
+STATICFILES_DIRS = [BASE_DIR / 'core' / 'static',]
 
 
 
