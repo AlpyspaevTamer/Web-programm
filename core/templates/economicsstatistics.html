@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Экономические и статистические задачи</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        p { margin: 10px 0; }
+        ul { margin: 10px 0; padding-left: 20px; }
+        .formula { font-weight: bold; color: #d35400; }
+        .image-container { text-align: center; margin: 20px 0; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body class="themes_theme">
+
+    <h1>Экономические и статистические задачи</h1>
+
+    <h2>Экономические задачи</h2>
+    <p>Экономические задачи включают в себя расчёт прибыли, процентов, инвестиций, оптимального распределения ресурсов и другие финансовые вычисления.</p>
+
+    <h3>Простые и сложные проценты</h3>
+
+    <h4>Формула простых процентов</h4>
+    <p>Простые проценты начисляются только на первоначальную сумму вклада или кредита:</p>
+    <p class="formula">S = P (1 + rt)</p>
+    <p>Где:</p>
+    <ul>
+        <li><span class="formula">S</span> – итоговая сумма.</li>
+        <li><span class="formula">P</span> – начальный капитал.</li>
+        <li><span class="formula">r</span> – процентная ставка в долях от единицы.</li>
+        <li><span class="formula">t</span> – время в годах.</li>
+    </ul>
+
+    <h4>Формула сложных процентов</h4>
+    <p>При сложных процентах начисление идёт не только на начальный капитал, но и на уже накопленные проценты:</p>
+    <p class="formula">S = P (1 + r/n)^(nt)</p>
+    <p>Где <span class="formula">n</span> – количество начислений процентов в год.</p>
+
+    <h3>Задача на сложные проценты</h3>
+    <p>Вклад 1000 рублей размещён под 5% годовых на 3 года с ежемесячным начислением процентов (<span class="formula">n = 12</span>). Найти итоговую сумму.</p>
+    <p><strong>Решение:</strong></p>
+    <p class="formula">S = 1000 (1 + 0.05/12)^(12×3)</p>
+    <p>После расчётов: <span class="formula">S ≈ 1161.62</span> рубля.</p>
+
+    <h2>Статистические задачи</h2>
+    <p>Статистика занимается сбором, обработкой и анализом данных для выявления закономерностей.</p>
+
+    <h3>Средние величины</h3>
+    <ul>
+        <li><strong>Среднее арифметическое:</strong> <span class="formula">M = (x₁ + x₂ + ... + xₙ) / n</span>.</li>
+        <li><strong>Медиана:</strong> центральное значение в упорядоченном ряду.</li>
+        <li><strong>Мода:</strong> наиболее часто встречающееся значение.</li>
+    </ul>
+
+    <h3>Дисперсия и стандартное отклонение</h3>
+    <p>Дисперсия показывает, насколько данные отклоняются от среднего:</p>
+    <p class="formula">D = (∑(xᵢ - M)²) / n</p>
+    <p>Стандартное отклонение – квадратный корень из дисперсии.</p>
+
+    <h3>Пример статистического анализа</h3>
+    <p>Даны оценки студентов: 3, 4, 5, 3, 5, 4, 4, 5, 3, 4. Найти среднее, моду и медиану.</p>
+    <p><strong>Решение:</strong></p>
+    <ul>
+        <li>Среднее: <span class="formula">M = (3+4+5+3+5+4+4+5+3+4)/10 = 4</span>.</li>
+        <li>Мода: чаще всего встречается <span class="formula">4</span>.</li>
+        <li>Медиана: среднее значение в упорядоченном ряду <span class="formula">3, 3, 3, 4, 4, 4, 4, 5, 5, 5</span> – это <span class="formula">4</span>.</li>
+    </ul>
+
+    <div class="image-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Normal_distribution_and_scales.gif" alt="Статистическое распределение">
+        <p><small>Пример нормального распределения</small></p>
+    </div>
+
+    <h2>Применение экономических и статистических методов</h2>
+    <ul>
+        <li>Финансовый анализ и прогнозирование.</li>
+        <li>Исследование рынка и маркетинг.</li>
+        <li>Оценка эффективности инвестиций.</li>
+        <li>Социологические исследования и анализ данных.</li>
+    </ul>
+    <div class="backbuttons">
+        <a href="/themes/">Назад</a>
+        <a href="/">На главную страницу</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Комбинаторика и теория вероятностей</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        p { margin: 10px 0; }
+        ul { margin: 10px 0; padding-left: 20px; }
+        .formula { font-weight: bold; color: #d35400; }
+        .image-container { text-align: center; margin: 20px 0; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body class="themes_theme">
+
+    <h1>Комбинаторика и теория вероятностей</h1>
+
+    <h2>Комбинаторика</h2>
+    <p>Комбинаторика изучает способы подсчёта количества различных способов выбора и расположения объектов.</p>
+
+    <h3>Основные правила комбинаторики</h3>
+    <ul>
+        <li><strong>Правило сложения:</strong> если есть <span class="formula">m</span> способов сделать одно действие и <span class="formula">n</span> способов другое, то общее число способов: <span class="formula">m + n</span>.</li>
+        <li><strong>Правило умножения:</strong> если одно действие можно выполнить <span class="formula">m</span> способами, а второе – <span class="formula">n</span>, то общее число способов: <span class="formula">m × n</span>.</li>
+    </ul>
+
+    <h3>Размещения, перестановки и сочетания</h3>
+
+    <h4>Перестановки</h4>
+    <p>Количество способов расположить <span class="formula">n</span> элементов в определённом порядке:</p>
+    <p class="formula">P(n) = n!</p>
+    <p>Где <span class="formula">n!</span> – факториал: <span class="formula">n! = n × (n - 1) × ... × 1</span>.</p>
+
+    <h4>Размещения</h4>
+    <p>Количество способов выбрать <span class="formula">k</span> элементов из <span class="formula">n</span> и расположить их в порядке:</p>
+    <p class="formula">A(n, k) = n! / (n - k)!</p>
+
+    <h4>Сочетания</h4>
+    <p>Количество способов выбрать <span class="formula">k</span> элементов из <span class="formula">n</span>, не учитывая порядок:</p>
+    <p class="formula">C(n, k) = n! / (k!(n - k)!)</p>
+
+    <div class="image-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/65/PascalTriangleAnimated2.gif" alt="Треугольник Паскаля">
+        <p><small>Треугольник Паскаля – визуальное представление биномиальных коэффициентов</small></p>
+    </div>
+
+    <h2>Теория вероятностей</h2>
+    <p>Теория вероятностей изучает случайные события и их вероятности.</p>
+
+    <h3>Основные понятия</h3>
+    <ul>
+        <li><strong>Случайное событие:</strong> результат, который может произойти в эксперименте.</li>
+        <li><strong>Элементарные исходы:</strong> все возможные результаты опыта.</li>
+        <li><strong>Пространство событий:</strong> множество всех элементарных исходов.</li>
+    </ul>
+
+    <h3>Формула классической вероятности</h3>
+    <p>Если все исходы равновозможны, вероятность события <span class="formula">A</span> определяется как:</p>
+    <p class="formula">P(A) = m / n</p>
+    <p>Где:</p>
+    <ul>
+        <li><span class="formula">m</span> – число благоприятных исходов.</li>
+        <li><span class="formula">n</span> – общее число исходов.</li>
+    </ul>
+
+    <h3>Основные свойства вероятности</h3>
+    <ul>
+        <li><span class="formula">0 ≤ P(A) ≤ 1</span> (вероятность всегда между 0 и 1).</li>
+        <li><span class="formula">P(Ω) = 1</span> (вероятность достоверного события = 1).</li>
+        <li><span class="formula">P(∅) = 0</span> (вероятность невозможного события = 0).</li>
+        <li><strong>Сумма вероятностей противоположных событий:</strong> <span class="formula">P(A) + P(¬A) = 1</span>.</li>
+    </ul>
+
+    <h3>Формула полной вероятности</h3>
+    <p>Если множество событий <span class="formula">B₁, B₂, ..., Bₙ</span> образует полную группу, то вероятность события <span class="formula">A</span> выражается как:</p>
+    <p class="formula">P(A) = P(A|B₁)P(B₁) + P(A|B₂)P(B₂) + ... + P(A|Bₙ)P(Bₙ)</p>
+
+    <h3>Формула Байеса</h3>
+    <p>Позволяет находить вероятность причины события:</p>
+    <p class="formula">P(Bₖ|A) = (P(A|Bₖ) P(Bₖ)) / P(A)</p>
+
+    <h3>Независимые события</h3>
+    <p>Два события <span class="formula">A</span> и <span class="formula">B</span> независимы, если:</p>
+    <p class="formula">P(A ∩ B) = P(A) × P(B)</p>
+
+    <h3>Пример решения задачи</h3>
+    <p>Задача: В урне 5 красных и 3 синих шара. Какова вероятность вытащить красный шар?</p>
+    <p><strong>Решение:</strong></p>
+    <p>Общее число шаров: <span class="formula">5 + 3 = 8</span>.</p>
+    <p>Число благоприятных исходов: <span class="formula">5</span>.</p>
+    <p>По формуле вероятности:</p>
+    <p class="formula">P(A) = 5 / 8 ≈ 0.625</p>
+    <p>Ответ: вероятность вытащить красный шар ≈ 62,5%.</p>
+
+    <div class="image-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/8c/Normal_distribution_curve.png" alt="Нормальное распределение">
+        <p><small>Нормальное распределение вероятностей</small></p>
+    </div>
+
+    <h2>Применение комбинаторики и теории вероятностей</h2>
+    <ul>
+        <li>Игры и лотереи.</li>
+        <li>Финансовый анализ и статистика.</li>
+        <li>Машинное обучение и искусственный интеллект.</li>
+        <li>Биология и генетика.</li>
+    </ul>
+    <div class="backbuttons">
+        <a href="/themes/">Назад</a>
+        <a href="/">На главную страницу</a>
+    </div>
+</body>
+</html>

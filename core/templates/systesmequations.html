@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Системы уравнений</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2 { color: #2c3e50; }
+        p { margin: 10px 0; }
+        ul { margin: 10px 0; padding-left: 20px; }
+        .formula { font-weight: bold; color: #d35400; }
+    </style>
+</head>
+<body class="themes_theme">
+
+    <h1>Системы уравнений</h1>
+
+    <h2>Определение</h2>
+    <p>Система уравнений — это несколько уравнений, которые содержат одни и те же переменные и должны выполняться одновременно.</p>
+
+    <h2>Способы решения систем уравнений</h2>
+
+    <h3>1. Метод подстановки</h3>
+    <p>Заключается в выражении одной переменной через другую в одном из уравнений и подстановке в другое уравнение.</p>
+    <p><strong>Пример:</strong></p>
+    <p class="formula">
+        y = 2x + 3  
+        <br>
+        3x + y = 7
+    </p>
+    <p>Подставляем y в уравнение:</p>
+    <p class="formula">3x + (2x + 3) = 7</p>
+    <p>Решаем: <span class="formula">5x = 4</span>, <span class="formula">x = 4/5</span>. Далее находим y.</p>
+
+    <h3>2. Метод сложения</h3>
+    <p>Заключается в сложении или вычитании уравнений для исключения одной переменной.</p>
+    <p><strong>Пример:</strong></p>
+    <p class="formula">
+        2x + 3y = 8  
+        <br>
+        4x - 3y = 2
+    </p>
+    <p>Складываем уравнения:</p>
+    <p class="formula">(2x + 3y) + (4x - 3y) = 8 + 2</p>
+    <p>Получаем <span class="formula">6x = 10</span>, следовательно, <span class="formula">x = 10/6</span>. Далее находим y.</p>
+
+    <h3>3. Метод матриц (Крамера)</h3>
+    <p>Используется для систем с двумя и более переменными и основан на определителях матриц.</p>
+
+    <h2>Виды систем уравнений</h2>
+    <ul>
+        <li><strong>Совместные</strong> — имеют одно или несколько решений.</li>
+        <li><strong>Несовместные</strong> — не имеют решений.</li>
+        <li><strong>Определенные</strong> — имеют единственное решение.</li>
+        <li><strong>Неопределенные</strong> — имеют бесконечно много решений.</li>
+    </ul>
+    <div class="backbuttons">
+        <a href="/themes/">Назад</a>
+        <a href="/">На главную страницу</a>
+    </div>
+</body>
+</html>

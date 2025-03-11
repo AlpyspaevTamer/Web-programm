@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Тригонометрия</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        p { margin: 10px 0; }
+        ul { margin: 10px 0; padding-left: 20px; }
+        .formula { font-weight: bold; color: #d35400; }
+        .image-container { text-align: center; margin: 20px 0; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body class="themes_theme">
+
+    <h1>Тригонометрия</h1>
+
+    <h2>Определение</h2>
+    <p>Тригонометрия — это раздел математики, изучающий отношения между сторонами и углами треугольников.</p>
+
+    <h2>Основные тригонометрические функции</h2>
+    <ul>
+        <li><strong>Синус</strong>: <span class="formula">sin(θ) = противолежащий катет / гипотенуза</span></li>
+        <li><strong>Косинус</strong>: <span class="formula">cos(θ) = прилежащий катет / гипотенуза</span></li>
+        <li><strong>Тангенс</strong>: <span class="formula">tan(θ) = sin(θ) / cos(θ) = противолежащий катет / прилежащий катет</span></li>
+        <li><strong>Котангенс</strong>: <span class="formula">cot(θ) = cos(θ) / sin(θ) = прилежащий катет / противолежащий катет</span></li>
+    </ul>
+
+    <div class="image-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Sine_and_cosine.svg/250px-Sine_and_cosine.svg.png" alt="Синус и косинус">
+        <p><small>Изображение: Определение синуса и косинуса</small></p>
+    </div>
+
+    <h2>Основные тригонометрические тождества</h2>
+    <ul>
+        <li><strong>Основное тригонометрическое тождество:</strong> <span class="formula">sin²(θ) + cos²(θ) = 1</span></li>
+        <li><strong>Формулы тангенса и котангенса:</strong></li>
+        <p class="formula">tan(θ) = sin(θ) / cos(θ)</p>
+        <p class="formula">cot(θ) = cos(θ) / sin(θ)</p>
+        <li><strong>Формулы двойного угла:</strong></li>
+        <p class="formula">sin(2θ) = 2sin(θ)cos(θ)</p>
+        <p class="formula">cos(2θ) = cos²(θ) - sin²(θ)</p>
+        <p class="formula">tan(2θ) = 2tan(θ) / (1 - tan²(θ))</p>
+    </ul>
+
+    <h2>Тригонометрия в прямоугольном треугольнике</h2>
+    <p>В прямоугольном треугольнике для нахождения сторон и углов можно использовать тригонометрические функции.</p>
+    <p>Пример: если известны один катет и угол, можно найти другую сторону с помощью формул:</p>
+    <p class="formula">a = c * sin(θ)</p>
+    <p class="formula">b = c * cos(θ)</p>
+
+    <h2>Применение тригонометрии</h2>
+    <ul>
+        <li>Астрономия и физика (расчет траекторий движения).</li>
+        <li>Геодезия и картография (измерение расстояний и высот).</li>
+        <li>Инженерия и архитектура (строительство и проектирование зданий).</li>
+        <li>Компьютерная графика и анимация.</li>
+    </ul>
+    <div class="backbuttons">
+        <a href="/themes/">Назад</a>
+        <a href="/">На главную страницу</a>
+    </div>
+</body>
+</html>

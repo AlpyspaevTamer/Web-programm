@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Площади и объемы сложных фигур</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        p { margin: 10px 0; }
+        ul { margin: 10px 0; padding-left: 20px; }
+        .formula { font-weight: bold; color: #d35400; }
+        .image-container { text-align: center; margin: 20px 0; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body class="themes_theme">
+
+    <h1>Площади и объемы сложных фигур</h1>
+
+    <h2>Площадь сложных фигур</h2>
+    <p>Площадь сложных фигур можно находить путем разбиения их на более простые фигуры (треугольники, прямоугольники, круги и т. д.) и сложения их площадей.</p>
+
+    <h3>Примеры расчета площади</h3>
+    <p><strong>1. Площадь фигуры, составленной из прямоугольников</strong></p>
+    <p>Разбиваем фигуру на два прямоугольника с известными сторонами и суммируем их площади:</p>
+    <p class="formula">S = S₁ + S₂</p>
+
+    <p><strong>2. Площадь фигуры с вырезом</strong></p>
+    <p>Если сложная фигура содержит вырезанную часть, её площадь вычисляется как разность площадей:</p>
+    <p class="formula">S = S₁ - S₂</p>
+
+    <div class="image-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Composite_shapes_area.svg/300px-Composite_shapes_area.svg.png" alt="Разбиение сложных фигур на простые">
+        <p><small>Изображение: Разбиение сложной фигуры на простые</small></p>
+    </div>
+
+    <h2>Объем сложных тел</h2>
+    <p>Объем сложных пространственных фигур также можно находить разбиением на простые тела (призмы, цилиндры, пирамиды, шары) и суммированием или вычитанием их объемов.</p>
+
+    <h3>Примеры расчета объема</h3>
+    <p><strong>1. Объем составного тела</strong></p>
+    <p>Если тело состоит из нескольких простых объемов, его объем равен сумме объемов частей:</p>
+    <p class="formula">V = V₁ + V₂</p>
+
+    <p><strong>2. Объем тела с вырезом</strong></p>
+    <p>Если в теле есть пустая часть, объем рассчитывается как разность:</p>
+    <p class="formula">V = V₁ - V₂</p>
+
+    <div class="image-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Composite_solid_volumes.svg/300px-Composite_solid_volumes.svg.png" alt="Разбиение сложных тел на простые">
+        <p><small>Изображение: Разбиение сложного тела на простые объемы</small></p>
+    </div>
+
+    <h2>Практическое применение</h2>
+    <ul>
+        <li>Строительство (расчет площади комнат, объемов строительных материалов).</li>
+        <li>Инженерия (определение массы деталей по их объему).</li>
+        <li>Дизайн и архитектура (планирование пространств и расчет объемов конструкций).</li>
+    </ul>
+    <div class="backbuttons">
+        <a href="/themes/">Назад</a>
+        <a href="/">На главную страницу</a>
+    </div>
+</body>
+</html>

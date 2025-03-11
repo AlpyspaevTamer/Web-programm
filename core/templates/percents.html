@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Проценты и пропорции</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        p {
+            text-align: justify;
+        }
+    </style>
+</head>
+<body class="themes_theme">
+    <h1>Целые числа и координаты</h1>
+
+    <h2>Целые числа</h2>
+    <p>Целые числа включают в себя натуральные числа, их противоположные и ноль:</p>
+    <p class="formula">... -3, -2, -1, 0, 1, 2, 3 ...</p>
+
+    <h3>Операции с целыми числами</h3>
+    <ul>
+        <li><strong>Сложение</strong>: если числа одного знака – складываем их модули; если разного – вычитаем из большего модуля меньший.</li>
+        <li><strong>Вычитание</strong>: заменяем разность на сложение с противоположным числом.</li>
+        <li><strong>Умножение и деление</strong>: если знаки одинаковые – результат положительный, если разные – отрицательный.</li>
+    </ul>
+
+    <h2>Координаты на числовой прямой</h2>
+    <p>Каждое целое число можно представить на числовой прямой.</p>
+
+    <div class="image-container">
+        <img src="number_line.jpg" alt="Числовая прямая">
+        <p><small>Числовая прямая</small></p>
+    </div>
+
+    <h2>Координаты на плоскости</h2>
+    <p>Каждая точка на плоскости определяется двумя числами – координатами <span class="formula">(x, y)</span>.</p>
+
+    <h3>Прямоугольная система координат</h3>
+    <p>Координаты точки <span class="formula">(x, y)</span> задаются расстояниями от осей:</p>
+    <ul>
+        <li>Ось <span class="formula">X</span> – горизонтальная.</li>
+        <li>Ось <span class="formula">Y</span> – вертикальная.</li>
+    </ul>
+
+    <div class="image-container">
+        <img src="coordinate_plane.jpg" alt="Координатная плоскость">
+        <p><small>Декартова система координат</small></p>
+    </div>
+
+    <h2>Координаты в пространстве</h2>
+    <p>Для пространственных объектов используется трёхмерная система координат <span class="formula">(x, y, z)</span>.</p>
+
+    <h3>Оси координат</h3>
+    <ul>
+        <li><span class="formula">X</span> – ось ширины.</li>
+        <li><span class="formula">Y</span> – ось высоты.</li>
+        <li><span class="formula">Z</span> – ось глубины.</li>
+    </ul>
+
+    <div class="image-container">
+        <img src="3d_coordinates.jpg" alt="Координаты в пространстве">
+        <p><small>Пространственная система координат</small></p>
+    </div>
+    <div class="backbuttons">
+        <a href="/themes/">Назад</a>
+        <a href="/">На главную страницу</a>
+    </div>
+</body>
+</html>
