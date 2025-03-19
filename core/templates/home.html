@@ -1,22 +1,44 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Калькулятор</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-</head>
-<div class="home_main">
-    <h1>Разработка интерактивного Web-приложения для решения математических задач</h1>
-    <div class="home_buttons">
-        <a href="themes/">Темы для изучения</a>
-        <a href="calculator/">Калькулятор</a>
-        <a href="generation/">Генерация задач</a>
-        <a href="plusmenos/">Сложение вычитание</a>
-        <a href="equalization/">Решение уравнений</a>
-    </div>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/style.css' %}"
+    />
+  </head>
+  <body class="home_container">
+    <div class="home">
+      <div>Привет, <a href="{% url 'profile' %}">{{request.user}}</a></div>
+      <p>Добро пожаловать на "Решение математических задач"!</p>
+      <p>
+        Этот сервис поможет тебе освоить математику с 1 по 11 класс. Здесь ты
+        найдёшь полный курс тем, подробные разборы задач и тестирования для
+        проверки знаний. <br />
 
-</div>
+        ✨ Что тебя ждёт?<br />
+        — Полный курс математики от простых чисел до сложных уравнений<br />
+        — Пошаговые объяснения решений<br />
+        — Тесты для проверки знаний и подготовки к экзаменам<br />
+        — Умный подбор задач под твой уровень<br />
+      </p>
+      <p>
+        Начни учиться прямо сейчас! Выбери свой класс или пройди тестирование,
+        чтобы определить свой уровень.
+      </p>
+      <button class="mybutton">
+        <a href="{% url 'first_page' classroom_id=1 %}" class="home_button"
+          >Начни прямо сейчас</a
+        >
+      </button>
+    </div>
+  </body>
 </html>

@@ -1,94 +1,74 @@
 from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from .models import *
+from django.http import JsonResponse
+from .models import Classroom, Question, Answer, TestResult
 
-def home(request):
-    return render(request, 'home.html')
+def home_view(request):
+    return render(request, "home.html")
 
-def calculator_view(request):
-    return render(request, "calculator.html")
 
-def plusmenos_view(request):
-    return render(request, "plusmenos.html")
 
-def generation_view(request):
-    return render(request, "generation.html")
+def get_test(request, classroom_id):
+    classroom = get_object_or_404(Classroom, id=classroom_id)
+    questions = Question.objects.filter(classroom=classroom).prefetch_related('answers')
+    data = {
+        "classroom": classroom.name,
+        "questions": [
+            {
+                "id": q.id,
+                "text": q.text,
+                "answers": [{"id": a.id, "text": a.text} for a in q.answers.all()]
+            }
+            for q in questions
+        ]
+    }
+    return JsonResponse(data)
 
-def equalization_view(request):
-    return render(request, "equalization.html")
+def submit_test(request, classroom_id):
+    if request.method == "POST":
+        correct_answers = 0
+        total_questions = Question.objects.filter(classroom_id=classroom_id).count()
 
-def themes_view(request):
-    return render(request, 'themes.html')
+        for question in Question.objects.filter(classroom_id=classroom_id):
+            selected_answer_id = request.POST.get(f'question_{question.id}')
+            if selected_answer_id:
+                selected_answer = get_object_or_404(Answer, id=selected_answer_id)
+                if selected_answer.is_correct:
+                    correct_answers += 1
 
-def naturalnumber_view(request):
-    return render(request, 'naturalnumber.html')
+        score = round((correct_answers / total_questions) * 100, 2) if total_questions > 0 else 0
 
-def arithmeticoperations_view(request):
-    return render(request, 'arithmeticoperations.html')
+        return JsonResponse({
+            "message": "Test submitted",
+            "score": score,
+            "correct_answers": correct_answers,
+            "total_questions": total_questions
+        })
 
-def units_view(request):
-    return render(request, 'units.html')
+def first_page(request, classroom_id):
+    classroom_id = 1
+    questions = Question.objects.filter(classroom_id=classroom_id).prefetch_related('answers')
+    return render(request, 'first.html', {'questions': questions, 'classroom_id': classroom_id})
 
-def geofigures_view(request):
-    return render(request, 'geofigures.html')
+def second_class_view(request):
+    classroom_id = 2
+    questions = Question.objects.filter(classroom_id=classroom_id)
+    return render(request, "second.html", {"questions": questions, "classroom_id": classroom_id})
 
-def simpleequations_view(request):
-    return render(request, 'simpleequations.html')
+def third_class_view(request):
+    questions = Question.objects.filter(classroom_id=3)
+    return render(request, "third.html", {"questions": questions})
 
-def multiplication_view(request):
-    return render(request, 'multiplication.html')
+def fourth_class_view(request):
+    questions = Question.objects.filter(classroom_id=4)
+    return render(request, "fourth.html", {"questions": questions})
 
-def fractions_view(request):
-    return render(request, 'fractions.html')
+def fifth_class_view(request):
+    questions = Question.objects.filter(classroom_id=5)
+    return render(request, "fifth.html", {"questions": questions})
 
-def percents_view(request):
-    return render(request, 'percents.html')
+def sixth_class_view(request):
+    questions = Question.objects.filter(classroom_id=6)
+    return render(request, "sixth.html", {"questions": questions})
 
-def integers_view(request):
-    return render(request, 'integers.html')
-
-def inequalities_view(request):
-    return render(request, 'inequalities.html')
-
-def geometrybase_view(request):
-    return render(request, 'geometrybase.html')
-
-def area_view(request):
-    return render(request, 'area.html')
-
-def quadraticequations_view(request):
-    return render(request, 'quadraticequations.html')
-
-def systesmequations_view(request):
-    return render(request, 'systesmequations.html')
-
-def functions_view(request):
-    return render(request, 'functions.html')
-
-def pythagoras_view(request):
-    return render(request, 'pythagoras.html')
-
-def volume_view(request):
-    return render(request, 'volume.html')
-
-def statistics_view(request):
-    return render(request, 'statistics.html')
-
-def trygonometry_view(request):
-    return render(request, 'trygonometry.html')
-
-def derivative_view(request):
-    return render(request, 'derivative.html')
-
-def integrals_view(request):
-    return render(request, 'integrals.html')
-
-def logarithms_view(request):
-    return render(request, 'logarithms.html')
-
-def combinatorics_view(request):
-    return render(request, 'combinatorics.html')
-
-def economicsstatistics_view(request):
-    return render(request, 'economicsstatistics.html')
-
-def vectorscoordinates_view(request):
-    return render(request, 'vectorscoordinates.html')

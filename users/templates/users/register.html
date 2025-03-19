@@ -6,47 +6,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'users/register.css' %}">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
-    <div class="register-container">
-        <h2>Регистрация</h2>
-
-        {% if form.errors %}
-        <div class="error">
-            <p>Ошибки в форме:</p>
-            <ul>
-                {% for field, errors in form.errors.items %}
-                {% for error in errors %}
-                <li>{{ field }}: {{ error }}</li>
-                {% endfor %}
-                {% endfor %}
-            </ul>
+    <div class="container_login">
+        <div class="login_title">
+            Resitration
         </div>
-        {% endif %}
-
-        <form method="post" action="{% url 'register' %}" class="register-form">
+        
+        <form method="post">
             {% csrf_token %}
-            <div class="form-group">
-                {{ form.username.label_tag }}
-                {{ form.username }}
+            <div class="login_input_div">
+                <input type="text" name="username" placeholder="Username" class="login_input">
+                <input type="email" name="email" placeholder="Email" class="login_input">
+                <input type="password" name="password1" placeholder="Password" class="login_input">
+                <input type="password" name="password2" placeholder="Confirm Password" class="login_input">
             </div>
-            <div class="form-group">
-                {{ form.email.label_tag }}
-                {{ form.email }}
-            </div>
-            <div class="form-group">
-                {{ form.password1.label_tag }}
-                {{ form.password1 }}
-            </div>
-            <div class="form-group">
-                {{ form.password2.label_tag }}
-                {{ form.password2 }}
-            </div>
-            <button type="submit" class="register-button">Зарегистрироваться</button>
+            <button type="submit" class="login_button">Register</button>
         </form>
+        
+
+        <div class="login_signup_bottom">
+            <div>Already have an account?<a href="{% url 'login' %}" class="login_signup_button"> Login</a></div>
+        </div>
     </div>
 </body>
-
 </html>

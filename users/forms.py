@@ -3,8 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 class RegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)  # Добавляем обязательное поле email
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ["username", "email", "password1", "password2"]  # Поля, которые будут в форме
+        fields = ["username", "email", "password1", "password2"] 

@@ -1,39 +1,21 @@
-from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth.decorators import login_required
+from django.contrib import admin
 from .views import *
+from django.shortcuts import redirect
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('users/', include('users.urls')),
-    path('', home, name='home'),
-    path('calculator/', calculator_view, name='calculator'),
-    path('plusmenos/', plusmenos_view, name='plusmenos'),
-    path('generation/', generation_view, name='generation'),
-    path('equalization/', equalization_view, name='equalization'),
-    path('themes/', themes_view, name='themes'),
-    path('themes/naturalnumber/', naturalnumber_view, name='naturalnumber'),
-    path('themes/arithmeticoperations/', arithmeticoperations_view, name='arithmeticoperations'), 
-    path('themes/units/', units_view, name='units'),     
-    path('themes/geofigures/', geofigures_view, name='geofigures'),    
-    path('themes/simpleequations/', simpleequations_view, name='simpleequations'),   
-    path('themes/multiplication/', multiplication_view, name='multiplication'),   
-    path('themes/fractions/', fractions_view, name='fractions'),   
-    path('themes/percents/', percents_view, name='percents'),   
-    path('themes/integers/', percents_view, name='integers'),   
-    path('themes/inequalities/', inequalities_view, name='inequalities'),   
-    path('themes/geometrybase/', geometrybase_view, name='geometrybase'),   
-    path('themes/area/', area_view, name='area'),   
-    path('themes/quadraticequations/', quadraticequations_view, name='quadraticequations'),   
-    path('themes/systesmequations/', systesmequations_view, name='systesmequations'),   
-    path('themes/functions/', functions_view, name='functions'),   
-    path('themes/pythagoras/', pythagoras_view, name='pythagoras'),   
-    path('themes/volume/', volume_view, name='volume'),   
-    path('themes/statistics/', statistics_view, name='statistics'),   
-    path('themes/trygonometry/', trygonometry_view, name='trygonometry'),   
-    path('themes/derivative/', derivative_view, name='derivative'),   
-    path('themes/integrals/', integrals_view, name='integrals'),   
-    path('themes/logarithms/', logarithms_view, name='logarithms'),   
-    path('themes/combinatorics/', combinatorics_view, name='combinatorics'),   
-    path('themes/economicsstatistics/', economicsstatistics_view, name='economicsstatistics'),
-    path('themes/vectorscoordinates/', vectorscoordinates_view, name='vectorscoordinates'),   
+    path("", login_required(home_view), name="home"), #Главная страница
+    path("users/", include("users.urls")),  #страница связанная с Регой и Логином
+    path("admin/", admin.site.urls), #страница админки
+    path('first/<int:classroom_id>/', first_page, name='first'),
+    path('second/', second_class_view, name='second'),
+    path('third/', third_class_view, name='third'),
+    path('fourth/', fourth_class_view, name='fourth'),
+    path('fifth/', fifth_class_view, name='fifth'),
+    path('sixth/', sixth_class_view, name='sixth'),
+    path('test/<int:classroom_id>/', get_test, name='get_test'),
+    path('test/<int:classroom_id>/submit/', submit_test, name='submit_test'),
+    path('first/<int:classroom_id>/', first_page, name='first_page'),
 ]

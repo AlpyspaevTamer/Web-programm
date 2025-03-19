@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Темы по математике для 5 класса</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      let form = document.querySelector("form");
+      if (form) {
+        form.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          let formData = new FormData(this);
+
+          let response = await fetch(this.action, {
+            method: "POST",
+            body: formData,
+          });
+
+          let data = await response.json();
+          if (data.message === "Test submitted") {
+            let resultMessage = `Результат: ${data.score}% (${data.correct_answers} из ${data.total_questions})`;
+            let resultDiv = document.createElement("div");
+            resultDiv.textContent = resultMessage;
+            resultDiv.style.position = "fixed";
+            resultDiv.style.top = "10px";
+            resultDiv.style.right = "10px";
+            resultDiv.style.backgroundColor = "rgba(0, 128, 0, 0.9)";
+            resultDiv.style.color = "white";
+            resultDiv.style.padding = "10px";
+            resultDiv.style.borderRadius = "5px";
+            resultDiv.style.boxShadow = "0px 0px 10px rgba(0,0,0,0.3)";
+            document.body.appendChild(resultDiv);
+            setTimeout(() => resultDiv.remove(), 5000);
+          }
+        });
+      }
+    });
+  </script>
+  <body class="box">
+    <div class="box_1">
+      <h1>Темы по математике для 5 класса</h1>
+      <div class="topic">
+        Натуральные числа и их свойства: разряды, классы, округление.
+      </div>
+      <div class="topic">
+        Арифметические операции: сложение, вычитание, умножение и деление
+        многозначных чисел.
+      </div>
+      <div class="topic">
+        Делимость чисел: признаки делимости, простые и составные числа,
+        разложение на множители.
+      </div>
+      <div class="topic">
+        Обыкновенные дроби: сложение, вычитание, умножение и деление.
+      </div>
+      <div class="topic">
+        Десятичные дроби: сложение, вычитание, умножение, деление.
+      </div>
+      <div class="topic">
+        Проценты: вычисление процентов от числа, нахождение целого по части.
+      </div>
+      <div class="topic">
+        Единицы измерения: длина, масса, площадь, объем, время.
+      </div>
+      <div class="topic">
+        Геометрия: виды углов, окружность, многоугольники, площадь и периметр
+        фигур.
+      </div>
+      <div class="topic">
+        Координатная плоскость: оси координат, координаты точки.
+      </div>
+      <div class="topic">
+        Решение задач: текстовые задачи, уравнения, логические задачи.
+      </div>
+      <h2>Тест</h2>
+      <form id="test-form">
+        {% for question in questions %}
+        <div class="question">
+          <p>{{ question.text }}</p>
+          {% for answer in question.answers.all %}
+          <label>
+            <input
+              type="radio"
+              name="question_{{ question.id }}"
+              value="{{ answer.id }}"
+            />
+            {{ answer.text }}
+          </label>
+          {% endfor %}
+        </div>
+        {% endfor %}
+        <button type="button" onclick="submitTest()">Завершить тест</button>
+      </form>
+
+      <p id="score-display" style="display: none"></p>
+
+      <button><a href="{% url 'fifth' %}">Перейти к пятому классу</a></button>
+
+      <script>
+        function submitTest() {
+          let formData = new FormData(document.getElementById("test-form"));
+
+          fetch("{% url 'submit_test' classroom_id=6 %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("score-display").style.display = "block";
+              document.getElementById(
+                "score-display"
+              ).innerText = `Правильных ответов: ${data.correct_answers} из ${data.total_questions} (Оценка: ${data.score}%)`;
+            })
+            .catch((error) => console.error("Ошибка:", error));
+        }
+      </script>
+
+      <button><a href="{% url 'fourth' %}">Перейти к 4 классу</a></button>
+      <button><a href="{% url 'sixth' %}">Перейти к 6 классу</a></button>
+    </div>
+  </body>
+</html>
