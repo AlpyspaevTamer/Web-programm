@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-7fea.up.railway.app',
+]
+
 import os
 
 # Получение порта из переменной окружения
