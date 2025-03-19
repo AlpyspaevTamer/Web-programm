@@ -29,7 +29,7 @@ class TestResult(models.Model):
     date_taken = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'classroom')  # Храним только лучший результат
+        unique_together = ('user', 'classroom')
 
     def __str__(self):
         return f"{self.user.username} - {self.classroom.name}: {self.score}"

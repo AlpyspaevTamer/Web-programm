@@ -33,9 +33,8 @@ CSRF_TRUSTED_ORIGINS = [
 
 import os
 
-# Получение порта из переменной окружения
+
 PORT = os.getenv('PORT', 8000)
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',

@@ -25,11 +25,25 @@ def get_test(request, classroom_id):
     }
     return JsonResponse(data)
 
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Question, Answer, TestResult, Classroom
+
 def submit_test(request, classroom_id):
     if request.method == "POST":
         correct_answers = 0
         total_questions = Question.objects.filter(classroom_id=classroom_id).count()
 
+        # Если в классе нет вопросов, возвращаем ошибку
+        if total_questions == 0:
+            return JsonResponse({
+                "message": "Нет доступных вопросов в этом классе.",
+                "score": 0,
+                "correct_answers": 0,
+                "total_questions": 0
+            })
+
+        # Считаем количество правильных ответов
         for question in Question.objects.filter(classroom_id=classroom_id):
             selected_answer_id = request.POST.get(f'question_{question.id}')
             if selected_answer_id:
@@ -37,14 +51,28 @@ def submit_test(request, classroom_id):
                 if selected_answer.is_correct:
                     correct_answers += 1
 
+        # Вычисление процента правильных ответов
         score = round((correct_answers / total_questions) * 100, 2) if total_questions > 0 else 0
 
+        # Сохранение результата теста
+        user = request.user  # Получаем текущего пользователя
+        classroom = get_object_or_404(Classroom, id=classroom_id)
+
+        # Обновляем или создаём новый результат теста для пользователя в данном классе
+        test_result, created = TestResult.objects.update_or_create(
+            user=user,
+            classroom=classroom,
+            defaults={'score': score}
+        )
+
+        # Возвращаем результат
         return JsonResponse({
             "message": "Test submitted",
             "score": score,
             "correct_answers": correct_answers,
             "total_questions": total_questions
         })
+
 
 def first_page(request, classroom_id):
     classroom_id = 1
