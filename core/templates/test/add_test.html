@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto p-6">
+    <!-- Анимированный заголовок -->
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center transform transition-all duration-500 hover:scale-105">
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+            Создать новый тест
+        </span>
+    </h1>
+    
+    <!-- Основная форма с анимацией появления -->
+    <div class="bg-white rounded-xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+        <form method="post" class="space-y-6 p-8">
+            {% csrf_token %}
+            
+            <!-- Поле названия теста -->
+            <div class="form-group space-y-2">
+                <label class="block text-lg font-medium text-gray-700 mb-1 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Название теста
+                </label>
+                {{ test_form.title }}
+                <div class="h-1 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full transition-all duration-300 transform origin-left scale-x-0 group-focus-within:scale-x-100"></div>
+            </div>
+            
+            <!-- Поле текста вопроса -->
+            <div class="form-group space-y-2">
+                <label class="block text-lg font-medium text-gray-700 mb-1 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Текст вопроса
+                </label>
+                {{ question_form.text }}
+            </div>
+            
+            <!-- Варианты ответов -->
+            <div class="space-y-4">
+                <h3 class="text-xl font-medium text-gray-800 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Варианты ответов
+                </h3>
+                <p class="text-gray-500 text-sm">Добавьте минимум 2 варианта ответа</p>
+                
+                {{ formset.management_form }}
+                <div id="answers-container" class="space-y-3">
+                    {% for form in formset %}
+                    <div class="answer-group border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-all duration-200 group">
+                        <div class="form-group mb-3">
+                            <label class="block text-gray-700 mb-1">Ответ {{ forloop.counter }}</label>
+                            {{ form.text }}
+                        </div>
+                        <label class="inline-flex items-center cursor-pointer">
+                            {{ form.is_correct }}
+                            <span class="ml-2 text-gray-700 group-hover:text-blue-600 transition-colors">Правильный ответ</span>
+                        </label>
+                        {% if forloop.counter > 2 %}
+                        <button type="button" class="remove-answer mt-2 text-sm text-red-500 hover:text-red-700 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Удалить
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <button type="button" id="add-answer" class="text-blue-600 hover:text-blue-800 flex items-center text-sm">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Добавить вариант ответа
+                </button>
+            </div>
+            
+            <!-- Кнопка отправки -->
+            <div class="pt-6 border-t border-gray-100">
+                <button type="submit" class="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Создать тест и продолжить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript для динамического добавления/удаления ответов -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('answers-container');
+    const addButton = document.getElementById('add-answer');
+    let answerCount = {{ formset.total_form_count }};
+    
+    addButton.addEventListener('click', function() {
+        const newAnswer = document.createElement('div');
+        newAnswer.className = 'answer-group border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-all duration-200 group';
+        newAnswer.innerHTML = `
+            <div class="form-group mb-3">
+                <label class="block text-gray-700 mb-1">Ответ ${answerCount + 1}</label>
+                <input type="text" name="answers-${answerCount}-text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="answers-${answerCount}-is_correct" class="rounded text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-gray-700 group-hover:text-blue-600 transition-colors">Правильный ответ</span>
+            </label>
+            <button type="button" class="remove-answer mt-2 text-sm text-red-500 hover:text-red-700 flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                Удалить
+            </button>
+        `;
+        
+        container.appendChild(newAnswer);
+        answerCount++;
+        
+        // Обновляем значение TOTAL_FORMS
+        const totalForms = document.getElementById('id_answers-TOTAL_FORMS');
+        totalForms.value = answerCount;
+    });
+    
+    container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-answer')) {
+            if (container.children.length > 2) {
+                e.target.closest('.answer-group').remove();
+                answerCount--;
+                
+                // Обновляем значение TOTAL_FORMS
+                const totalForms = document.getElementById('id_answers-TOTAL_FORMS');
+                totalForms.value = answerCount;
+                
+                // Перенумеровываем оставшиеся ответы
+                Array.from(container.children).forEach((group, index) => {
+                    group.querySelector('label').textContent = `Ответ ${index + 1}`;
+                });
+            } else {
+                alert('Должно быть минимум 2 варианта ответа');
+            }
+        }
+    });
+});
+</script>
+
+<a href="javascript:history.back()" 
+   class="fixed top-12 left-12 bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all hover:shadow-xl hover:scale-105">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+</a>
+{% endblock %}

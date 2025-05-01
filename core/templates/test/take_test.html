@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+    <div class="mb-8">
+        <a href="{% url 'test_list' %}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+            ← Назад к списку тестов
+        </a>
+    </div>
+
+    <form method="post" class="space-y-8">
+        {% csrf_token %}
+        <div class="bg-white rounded-xl shadow-md p-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">{{ test.title }}</h1>
+            
+            {% for question in test.questions.all %}
+            <div class="mb-8 p-4 border-b border-gray-100">
+                <h3 class="text-xl font-semibold mb-4">Вопрос {{ forloop.counter }}: {{ question.text }}</h3>
+                
+                <div class="space-y-3">
+                    {% for answer in question.answers.all %}
+                    <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                        <input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}" class="h-5 w-5">
+                        <span>{{ answer.text }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="text-right mb-4 text-lg font-medium">
+                Осталось времени: <span id="timer">30:00</span>
+            </div>
+            
+            <script>
+                // Таймер обратного отсчета
+                let timeLeft = {{ test.time_limit }} * 60;
+                const timer = setInterval(() => {
+                    timeLeft--;
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    document.getElementById('timer').textContent = 
+                        `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        document.querySelector('form').submit();
+                    }
+                }, 1000);
+            </script>
+            
+            <button type="submit" class="w-full py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                Отправить ответы
+            </button>
+        </div>
+    </form>
+</div>
+
+<a href="javascript:history.back()" 
+   class="fixed top-12 left-12 bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all hover:shadow-xl hover:scale-105">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+</a>
+{% endblock %}

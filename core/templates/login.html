@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <div class="bg-white rounded-xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+      <!-- Заголовок с градиентом -->
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-600 py-6 px-8 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+        </svg>
+        <h1 class="text-2xl font-bold text-white mt-4">Добро пожаловать</h1>
+        <p class="mt-1 text-blue-100 text-sm">Войдите в свой аккаунт</p>
+      </div>
+
+      <div class="p-8">
+        <form method="post" class="space-y-6">
+          {% csrf_token %}
+          
+          <!-- Сообщения об ошибках -->
+          {% if form.errors %}
+          <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg flex items-start">
+            <svg class="h-5 w-5 text-red-500 mt-0.5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+            <div>
+              <p class="font-medium text-red-700">Ошибка входа</p>
+              <p class="text-sm text-red-600 mt-1">Проверьте правильность логина и пароля</p>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Поле логина -->
+          <div>
+            <label for="id_username" class="block text-sm font-medium text-gray-700 mb-1">Логин</label>
+            <div class="relative">
+              <input 
+                type="text" 
+                name="username" 
+                id="id_username" 
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pl-10"
+                placeholder="Ваш логин">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Поле пароля -->
+          <div>
+            <label for="id_password" class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
+            <div class="relative">
+              <input 
+                type="password" 
+                name="password" 
+                id="id_password" 
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pl-10"
+                placeholder="Ваш пароль">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+            </div>
+            <div class="mt-2 flex justify-between items-center">
+              <div class="flex items-center">
+                <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                <label for="remember-me" class="ml-2 block text-sm text-gray-700">Запомнить меня</label>
+              </div>
+              <a href="#" class="text-sm text-blue-600 hover:text-blue-500 hover:underline">Забыли пароль?</a>
+            </div>
+          </div>
+
+          
+          <form method="POST" action="{% url 'login' %}" class="space-y-6">
+            {% csrf_token %}
+            
+            
+            <button 
+              type="submit" 
+              class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+              Войти в аккаунт
+            </button>
+          </form>
+        </form>
+
+        <!-- Ссылка на регистрацию -->
+        <div class="mt-6 text-center">
+          <p class="text-sm text-gray-600">
+            Ещё нет аккаунта?
+            <a href="{% url 'register' %}" class="font-medium text-blue-600 hover:text-blue-500 hover:underline ml-1">
+              Зарегистрироваться
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

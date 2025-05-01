@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Кнопка назад в шапке -->
+    <div class="mb-4">
+        <a href="{% url 'lectures_list' %}" 
+           class="inline-flex items-center text-blue-600 hover:text-blue-800">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Назад к списку лекций
+        </a>
+    </div>
+
+    <!-- Шапка лекции -->
+    <div class="mb-8">
+        {% if lecture.image %}
+        <img src="{{ lecture.image.url }}" 
+             alt="{{ lecture.title }}" 
+             class="w-full h-64 object-cover rounded-lg mb-4">
+        {% endif %}
+        
+        <div class="flex items-center gap-4 mb-4">
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                {{ lecture.get_grade_display }}
+            </span>
+            <span class="text-gray-500">{{ lecture.created_at|date:"d.m.Y" }}</span>
+        </div>
+        
+        <h1 class="text-3xl font-bold mb-4">{{ lecture.title }}</h1>
+        <p class="text-gray-700 mb-6">{{ lecture.description }}</p>
+        
+        <a href="{{ lecture.file.url }}" 
+           download 
+           class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Скачать DOCX
+        </a>
+    </div>
+    
+    <!-- Контент из DOCX -->
+    <div class="prose max-w-none bg-white p-6 rounded-lg shadow-sm mb-8">
+        {{ lecture_content|safe }}
+    </div>
+
+    <!-- Кнопка назад в подвале -->
+    <div class="text-center">
+        <a href="{% url 'lectures_list' %}" 
+           class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Вернуться к списку лекций
+        </a>
+    </div>
+</div>
+{% endblock %}
