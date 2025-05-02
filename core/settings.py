@@ -27,7 +27,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://*', 'http://*',
+    'https://web-production-e29e3.up.railway.app',
 ]
 
 import os
