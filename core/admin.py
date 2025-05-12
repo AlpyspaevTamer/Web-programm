@@ -1,6 +1,13 @@
 from django.contrib import admin
-from .models import Question, Answer, Test
 from django.utils.html import format_html
+from django.contrib.auth.admin import UserAdmin
+from .models import Question, Answer, Test
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from core.models import User
+
+@admin.register(User)
+class CustomUserAdmin(BaseUserAdmin):
+    pass
 
 class AnswerInline(admin.TabularInline):
     model = Answer
@@ -10,7 +17,7 @@ class AnswerInline(admin.TabularInline):
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
-    list_display = ('text', 'image_preview', 'test')  # убрал 'difficulty', если его нет
+    list_display = ('text', 'image_preview', 'test')
     list_filter = ('test',)
     readonly_fields = ('image_preview',)
     fields = ('test', 'text', 'image')

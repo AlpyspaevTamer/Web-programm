@@ -3,9 +3,7 @@
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 flex items-center justify-center px-4">
   <div class="w-full max-w-md">
-    <!-- Карточка формы -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-      <!-- Заголовок -->
       <div class="bg-gradient-to-r from-indigo-600 to-blue-500 py-6 px-8">
         <h2 class="text-2xl font-bold text-white text-center">Регистрация</h2>
         <p class="mt-1 text-blue-100 text-center text-sm">Создайте новый аккаунт</p>
@@ -15,7 +13,6 @@
         <form class="space-y-5" method="post">
           {% csrf_token %}
           
-          <!-- Общие ошибки -->
           {% if form.non_field_errors %}
           <div class="bg-red-50 border-l-4 border-red-500 p-4">
             <div class="flex">
@@ -33,7 +30,6 @@
           </div>
           {% endif %}
 
-          <!-- Поля формы -->
           <div class="space-y-5">
             {% for field in form %}
             <div>
@@ -55,7 +51,6 @@
             {% endfor %}
           </div>
 
-          <!-- Кнопка отправки -->
           <div class="pt-2">
             <button type="submit" class="w-full py-3 px-4 rounded-lg bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
               Зарегистрироваться
@@ -63,7 +58,6 @@
           </div>
         </form>
 
-        <!-- Ссылка на вход -->
         <div class="mt-6 text-center">
           <p class="text-sm text-gray-600">
             Уже есть аккаунт?
@@ -77,9 +71,7 @@
   </div>
 </div>
 
-<!-- Стили для полей ввода -->
 <style>
-  /* Явные стили вместо @apply */
   input[type="text"],
   input[type="email"],
   input[type="password"] {

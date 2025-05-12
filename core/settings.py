@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
     'core',
     'django_filters',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -149,9 +150,8 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Настройки аутентификации
-LOGIN_URL = '/login/'  # URL для перенаправления неавторизованных пользователей
-LOGIN_REDIRECT_URL = 'home'  # Куда перенаправлять после успешного входа
-LOGOUT_REDIRECT_URL = 'login'  # Куда перенаправлять после выхода
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
 
 AUTH_USER_MODEL = 'core.User'

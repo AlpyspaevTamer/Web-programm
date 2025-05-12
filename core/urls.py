@@ -5,7 +5,6 @@ from django.conf.urls.static import static
 from django.contrib.admin.views.decorators import staff_member_required
 from .views import *
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name='home'),
@@ -14,16 +13,20 @@ urlpatterns = [
     path('lectures/', LectureListView.as_view(), name='lectures_list'),
     path('lectures/add/', staff_member_required(AddLectureView.as_view()), name='add_lecture'),
     path('lectures/<int:pk>/', LectureDetailView.as_view(), name='lecture_detail'),
+    path('lectures/<int:pk>/delete/', staff_member_required(delete_lecture), name='delete_lecture'),
+    path('lectures/<int:pk>/edit/', staff_member_required(LectureUpdateView.as_view()), name='edit_lecture'),
 
     # URL для тестов
-    path('tests/', test_list, name='test_list'),
-    path('tests/add/', add_test, name='add_test'),
-    path('tests/<int:pk>/', test_detail, name='test_detail'),  # Добавлен этот маршрут
+    path('tests/', TestListView.as_view(), name='test_list'),
+    path('tests/add/', TestCreateView.as_view(), name='add_test'),
+    path('tests/<int:pk>/', test_detail, name='test_detail'),
     path('tests/<int:test_id>/add-question/', add_question, name='add_question'),
-    path('tests/<int:pk>/questions/', test_questions, name='test_questions'),  # Рекомендую добавить
+    path('tests/<int:pk>/questions/', test_questions, name='test_questions'),
     path('tests/<int:pk>/take/', take_test, name='take_test'),
     path('tests/<int:pk>/results/<int:score>/', test_results, name='test_results'),
     path('tests/<int:pk>/delete/', staff_member_required(delete_test), name='delete_test'),
+    path('tests/<int:test_id>/select-variant/', select_variant, name='select_variant'),
+    path('tests/<int:pk>/take/<int:variant_id>/', take_test, name='take_test_variant'),
 
     # Аутентификация
     path('register/', register_view, name='register'),
@@ -32,5 +35,9 @@ urlpatterns = [
 
     # Профиль
     path('profile/', profile_view, name='profile'),
+
+    # Видеолекции
+    path('video-lectures/', video_lecture_view, name='video_lectures'),
+    path('video-lectures/add/', add_video_lecture_view, name='add_video_lecture'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
