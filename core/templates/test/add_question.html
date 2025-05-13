@@ -1,75 +1,165 @@
 {% extends 'base.html' %}
+{% load static widget_tweaks %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto p-6">
-    <!-- Шапка с навигацией -->
     <div class="mb-8">
-        <a href="{% url 'test_list' %}" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            К списку тестов
+        <a href="{% url 'test_list' %}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+            ← Назад к списку тестов
         </a>
     </div>
 
-    <!-- Основной контент -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden p-8">
         <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ test.title }}</h1>
-        <p class="text-gray-600 mb-8">Добавление нового вопроса к тесту</p>
         
-        <form method="post" class="space-y-6">
+        <form method="post" class="space-y-6" id="question-form" enctype="multipart/form-data">
             {% csrf_token %}
+            {{ formset.management_form }}
             
-            <!-- Поле текста вопроса -->
-            <div class="space-y-2">
-                <label class="block text-lg font-medium text-gray-700">Текст вопроса</label>
-                {{ question_form.text }}
-                {% if question_form.text.errors %}
-                    <div class="text-red-500 text-sm">{{ question_form.text.errors }}</div>
-                {% endif %}
-            </div>
-            
-            <!-- Варианты ответов -->
+            <!-- Скрытое поле для изображения вопроса -->
+            {{ question_form.image|add_class:"hidden" }}
+
+            <!-- Блок вопроса -->
             <div class="space-y-4">
-                <h3 class="text-xl font-medium text-gray-800">Варианты ответов</h3>
-                <p class="text-gray-500 text-sm">Отметьте хотя бы один правильный ответ</p>
-                
-                {{ formset.management_form }}
-                {% for form in formset %}
-                <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
-                    <div class="space-y-2 mb-3">
-                        <label class="block text-gray-700">Ответ {{ forloop.counter }}</label>
-                        {{ form.text }}
-                        {% if form.text.errors %}
-                            <div class="text-red-500 text-sm">{{ form.text.errors }}</div>
-                        {% endif %}
-                    </div>
-                    <label class="inline-flex items-center cursor-pointer">
-                        {{ form.is_correct }}
-                        <span class="ml-2 text-gray-700">Правильный ответ</span>
-                    </label>
+                <div class="space-y-2">
+                    <label class="block text-lg font-medium text-gray-700">Текст вопроса</label>
+                    {{ question_form.text|add_class:"w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" }}
                 </div>
-                {% endfor %}
+
+                <!-- Зона для вставки изображения вопроса -->
+                <div class="paste-zone-question border-2 border-dashed border-gray-300 rounded-lg p-6 text-center min-h-[200px] flex items-center justify-center">
+                    <p class="text-gray-500">Нажмите сюда и вставьте изображение (Ctrl+V)</p>
+                    <div id="question-image-preview" class="mt-4"></div>
+                </div>
             </div>
-            
-            <!-- Кнопки действий -->
+
+            <!-- Блок ответов -->
+            <div class="space-y-4">
+                <h3 class="text-xl font-medium text-gray-800">5 вариантов ответов</h3>
+                
+                <div id="answers-container" class="space-y-4">
+                    {% for form in formset %}
+                        <div class="answer-container border border-gray-200 rounded-lg p-4">
+                            {{ form.id }}
+                            
+                            <!-- Текст ответа -->
+                            <div class="mb-3">
+                                <label class="block text-gray-700">Ответ {{ forloop.counter }}</label>
+                                {{ form.text|add_class:"w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500" }}
+                            </div>
+
+                            <!-- Зона для вставки изображения ответа -->
+                            <div class="paste-zone-answer border-2 border-dashed border-gray-300 rounded-lg p-4 text-center min-h-[150px] flex items-center justify-center mt-3">
+                                <p class="text-gray-500 text-sm">Вставьте изображение (Ctrl+V)</p>
+                                <div class="image-preview mt-2"></div>
+                                {{ form.image|add_class:"hidden answer-image-input" }}
+                            </div>
+
+                            <!-- Чекбокс правильного ответа -->
+                            <div class="flex items-center mt-3">
+                                {{ form.is_correct|add_class:"form-check-input h-5 w-5 rounded-full border-2" }}
+                                <label class="ml-2 text-gray-700 cursor-pointer">Правильный ответ</label>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Кнопки отправки -->
             <div class="flex justify-between pt-6 border-t border-gray-100">
-                <button type="submit" name="add_another" value="1"
-                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
+                <button type="submit" name="add_another" value="1" 
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     Добавить еще вопрос
                 </button>
-                <button type="submit" name="finish" value="1"
-                        class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
+                <button type="submit" name="finish" value="1" 
+                        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                     Завершить создание
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Общая обработка изображений
+    function handleImage(blob, input, preview) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `<img src="${e.target.result}" 
+                                    class="max-h-32 rounded-lg shadow mx-auto" 
+                                    alt="Предпросмотр">`;
+            const file = new File([blob], 'screenshot.png', {type: 'image/png'});
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            input.files = dataTransfer.files;
+        };
+        reader.readAsDataURL(blob);
+    }
+
+    // Обработчики для всех ответов
+    document.querySelectorAll('.answer-container').forEach(form => {
+        const pasteZone = form.querySelector('.paste-zone-answer');
+        const imageInput = form.querySelector('.answer-image-input');
+        const preview = form.querySelector('.image-preview');
+
+        pasteZone.addEventListener('paste', function(e) {
+            const items = e.clipboardData.items;
+            for (const item of items) {
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    const blob = item.getAsFile();
+                    handleImage(blob, imageInput, preview);
+                    e.preventDefault();
+                    break;
+                }
+            }
+        });
+    });
+
+    // Обработчик для вопроса
+    document.querySelector('.paste-zone-question').addEventListener('paste', function(e) {
+        const items = e.clipboardData.items;
+        for (const item of items) {
+            if (item.kind === 'file' && item.type.startsWith('image/')) {
+                const blob = item.getAsFile();
+                handleImage(blob, 
+                    document.querySelector('#id_image'), 
+                    document.querySelector('#question-image-preview'));
+                e.preventDefault();
+                break;
+            }
+        }
+    });
+
+    // Обработчик чекбоксов
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('.form-check-input')) {
+            const container = e.target.closest('.answer-container');
+            container.querySelectorAll('.form-check-input').forEach(cb => {
+                if (cb !== e.target) cb.checked = false;
+            });
+        }
+    });
+});
+</script>
+
+<style>
+.paste-zone-question, .paste-zone-answer {
+    transition: border-color 0.2s ease;
+    background: #f8fafc;
+    cursor: text;
+}
+.paste-zone-question:hover, .paste-zone-answer:hover {
+    border-color: #3b82f6;
+    background: #f0f9ff;
+}
+.form-check-input:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+.image-preview img {
+    max-height: 150px;
+    object-fit: contain;
+}
+</style>
 {% endblock %}

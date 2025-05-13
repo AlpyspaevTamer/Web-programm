@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.forms import inlineformset_factory
-from .models import User, Lecture, Question, Answer, Test, Category, Tag, TestVariant, VideoLecture
+from .models import User, Lecture, Question, Answer, Test, Category, Tag, VideoLecture
 
 class LectureForm(forms.ModelForm):
     description = forms.CharField(
@@ -81,141 +81,132 @@ class LectureForm(forms.ModelForm):
         }
 
 class TestForm(forms.ModelForm):
-    has_variants = forms.BooleanField(
-        required=False,
-        widget=forms.CheckboxInput(attrs={
-            'class': 'form-check-input',
-            'id': 'has-variants-checkbox'
-        }),
-        label="Тест с вариантами"
-    )
-
     class Meta:
         model = Test
-        fields = ['title', 'description', 'subject', 'has_variants', 'time_limit']
+        fields = ['title', 'description', 'time_limit', 'password']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Название теста'
+            }),
+            'password': forms.PasswordInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Пароль (Необязательно)'
             }),
             'description': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
                 'placeholder': 'Описание теста'
             }),
-            'subject': forms.Select(attrs={'class': 'form-control'}),
             'time_limit': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Время на прохождение (минуты)'
             })
         }
         labels = {
-            'subject': 'Предмет',
             'time_limit': 'Лимит времени (мин)'
         }
 
-class TestVariantForm(forms.ModelForm):
-    class Meta:
-        model = TestVariant
-        fields = ['name', 'description', 'order']
-        widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Название варианта'
-            }),
-            'description': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 2,
-                'placeholder': 'Описание варианта'
-            }),
-            'order': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Порядковый номер'
-            })
-        }
-
-TestVariantFormSet = inlineformset_factory(
-    Test,
-    TestVariant,
-    form=TestVariantForm,
-    extra=1,
-    can_delete=True,
-    min_num=1,
-    validate_min=True
-)
-
-class QuestionForm(forms.ModelForm):
-    QUESTION_TYPES = [
-        ('single', 'Один правильный ответ'),
-        ('multiple', 'Несколько правильных ответов'),
-        ('text', 'Текстовый ответ'),
-    ]
-
-    question_type = forms.ChoiceField(
-        choices=QUESTION_TYPES,
-        initial='single',
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label="Тип вопроса"
+class TestPasswordForm(forms.Form):
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Введите пароль'
+        }),
+        label="Пароль"
     )
 
+
+class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ['text', 'question_type', 'variant', 'points']
+        fields = ['text', 'image']
         widgets = {
             'text': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': 'Текст вопроса'
+                'placeholder': 'Текст вопроса'  # Убрали лишний атрибут accept
             }),
-            'variant': forms.Select(attrs={'class': 'form-control'}),
-            'points': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Баллы за вопрос',
-                'min': 1
+            'image': forms.FileInput(attrs={  # Добавили виджет для изображения
+                'class': 'hidden',
+                'accept': 'image/*'
             })
         }
 
     def __init__(self, *args, **kwargs):
-        test_id = kwargs.pop('test_id', None)
+        self.test = kwargs.pop('test', None)
         super().__init__(*args, **kwargs)
-        
-        if test_id:
-            self.fields['variant'].queryset = TestVariant.objects.filter(test_id=test_id)
-        else:
-            self.fields['variant'].queryset = TestVariant.objects.none()
+    
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.test:
+            instance.test = self.test
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
+from django import forms
+from django.forms import inlineformset_factory
+from .models import Answer, Question
 
 class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
-        fields = ['text', 'is_correct', 'points']
+        fields = ['text', 'image', 'is_correct']
         widgets = {
             'text': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Текст ответа'
+                'class': 'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500',
+                'placeholder': 'Введите текст ответа'
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'hidden',
+                'accept': 'image/*'
             }),
             'is_correct': forms.CheckboxInput(attrs={
-                'class': 'form-check-input',
-                'data-answer-type': 'correct'
-            }),
-            'points': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Баллы за ответ',
-                'min': 0
+                'class': 'form-check-input h-5 w-5 rounded-full border-2 cursor-pointer',
             })
         }
         labels = {
-            'is_correct': 'Правильный ответ',
-            'points': 'Баллы'
+            'is_correct': 'Правильный ответ'
         }
+
+class BaseAnswerFormSet(forms.BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        # Проверка наличия хотя бы одного правильного ответа
+        if any(self.errors):
+            return
+            
+        correct_answers = 0
+        for form in self.forms:
+            if form.cleaned_data.get('is_correct', False):
+                correct_answers += 1
+        
+        question_type = self.instance.question_type if self.instance else 'single'
+        
+        if question_type == 'single' and correct_answers != 1:
+            raise forms.ValidationError("Должен быть ровно один правильный ответ для этого типа вопроса")
+            
+        if question_type == 'multiple' and correct_answers < 1:
+            raise forms.ValidationError("Должен быть хотя бы один правильный ответ")
+            
+        if question_type == 'text' and correct_answers > 0:
+            raise forms.ValidationError("Для текстовых вопросов не должно быть помеченных ответов")
 
 AnswerFormSet = inlineformset_factory(
     Question,
     Answer,
     form=AnswerForm,
-    extra=2,
-    min_num=1,
+    formset=BaseAnswerFormSet,
+    extra=5,
+    min_num=5,
+    max_num=5,
     validate_min=True,
-    can_delete=True
+    validate_max=True,
+    can_delete=False,
+    labels={
+        'DELETE': 'Удалить ответ'
+    }
 )
 
 class RegisterForm(UserCreationForm):

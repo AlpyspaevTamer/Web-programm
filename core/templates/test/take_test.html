@@ -17,6 +17,13 @@
             <div class="mb-8 p-4 border-b border-gray-100">
                 <h3 class="text-xl font-semibold mb-4">Вопрос {{ forloop.counter }}: {{ question.text }}</h3>
                 
+                {% if question.image %}
+    <div class="mb-4">
+        <img src="{{ question.image.url }}" 
+             alt="Иллюстрация к вопросу" 
+             class="max-w-full rounded-lg shadow-md">
+    </div>
+    {% endif %}
                 <div class="space-y-3">
                     {% for answer in question.answers.all %}
                     <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">

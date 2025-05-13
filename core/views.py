@@ -7,11 +7,11 @@ from .utils import docx_to_html
 from django.contrib.auth import login, logout
 from .forms import (RegisterForm, LoginForm, LectureForm, TestForm, 
                    QuestionForm, AnswerFormSet, VideoLectureForm,
-                   TestVariantFormSet)
+                   )
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import (Lecture, Category, Tag, Test, Question, 
-                    Answer, VideoLecture, TestVariant, Subject)
+                    Answer, VideoLecture, Subject)
 from django.contrib import messages
 from django.db import models
 from django.contrib.admin.views.decorators import staff_member_required
@@ -20,7 +20,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 class LectureListView(LoginRequiredMixin, FilterView):
     model = Lecture
     filterset_class = LectureFilter
-    template_name = 'lectures.html'
+    template_name = 'lectures/lectures.html'
     context_object_name = 'lectures'
     paginate_by = 12
     login_url = '/login/'
@@ -39,7 +39,7 @@ class LectureListView(LoginRequiredMixin, FilterView):
 
 class LectureDetailView(DetailView):
     model = Lecture
-    template_name = 'lectures/detail.html'
+    template_name = 'lectures/lecture_detail.html'
     
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -113,7 +113,7 @@ def register_view(request):
             return redirect('home')
     else:
         form = RegisterForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'user/register.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -124,7 +124,7 @@ def login_view(request):
             return redirect('home')
     else:
         form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'user/login.html', {'form': form})
 
 def custom_logout(request):
     logout(request)
@@ -132,11 +132,11 @@ def custom_logout(request):
 
 @login_required(login_url='/login/')
 def home_view(request):
-    return render(request, 'home.html')
+    return render(request, 'base/home.html')
 
 @login_required(login_url='/login/')
 def profile_view(request):
-    return render(request, 'profile.html')
+    return render(request, 'user/profile.html')
 
 # Тесты
 def is_teacher(user):
@@ -161,29 +161,10 @@ class TestCreateView(LoginRequiredMixin, CreateView):
     template_name = 'test/add_test.html'
     success_url = reverse_lazy('test_list')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context['variant_formset'] = TestVariantFormSet(self.request.POST)
-        else:
-            context['variant_formset'] = TestVariantFormSet()
-        return context
-
     def form_valid(self, form):
-        context = self.get_context_data()
-        variant_formset = context['variant_formset']
-        
-        if form.cleaned_data['has_variants'] and not variant_formset.is_valid():
-            return self.render_to_response(self.get_context_data(form=form))
-            
         self.object = form.save(commit=False)
         self.object.author = self.request.user
         self.object.save()
-        
-        if form.cleaned_data['has_variants']:
-            variant_formset.instance = self.object
-            variant_formset.save()
-        
         messages.success(self.request, 'Тест успешно создан!')
         return redirect('add_question', test_id=self.object.id)
 
@@ -228,26 +209,39 @@ def add_question(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     
     if request.method == 'POST':
-        question_form = QuestionForm(request.POST, test_id=test.id)
-        formset = AnswerFormSet(request.POST)
-        
+        question_form = QuestionForm(request.POST, request.FILES)
+        formset = AnswerFormSet(request.POST, request.FILES)
+
         if question_form.is_valid() and formset.is_valid():
             question = question_form.save(commit=False)
             question.test = test
             question.save()
             
+            # Проверка правильных ответов
+            has_correct = any(form.cleaned_data.get('is_correct') for form in formset)
+            
+            if not has_correct:
+                messages.error(request, 'Отметьте хотя бы один правильный ответ!')
+                return render(request, 'test/add_question.html', {
+                    'test': test,
+                    'question_form': question_form,
+                    'formset': formset,
+                })
+
+            # Сохраняем все 5 ответов
             for form in formset:
                 answer = form.save(commit=False)
                 answer.question = question
                 answer.save()
+
+            messages.success(request, 'Вопрос успешно сохранён!')
             
             if 'add_another' in request.POST:
                 return redirect('add_question', test_id=test.id)
             return redirect('test_detail', pk=test.id)
-    
     else:
-        question_form = QuestionForm(test_id=test.id)
-        formset = AnswerFormSet()
+        question_form = QuestionForm()
+        formset = AnswerFormSet(queryset=Answer.objects.none())
     
     return render(request, 'test/add_question.html', {
         'test': test,
@@ -255,12 +249,13 @@ def add_question(request, test_id):
         'formset': formset,
     })
 
+
 @login_required
 def test_detail(request, pk):
     test = get_object_or_404(Test, pk=pk)
     
     if is_teacher(request.user):
-        questions = test.questions.select_related('variant').prefetch_related('answers')
+        questions = test.questions.prefetch_related('answers')
         for question in questions:
             question.correct_count = question.answers.filter(is_correct=True).count()
         
@@ -289,20 +284,17 @@ def select_variant(request, test_id):
     })
 
 @login_required
-def take_test(request, pk, variant_id=None):
+def take_test(request, pk):
     if is_teacher(request.user):
         return redirect('test_detail', pk=pk)
     
     test = get_object_or_404(Test, pk=pk)
     
-    if test.has_variants and not variant_id:
-        return redirect('select_variant', test_id=test.id)
+    # Проверка пароля
+    if test.password and not request.session.get(f'test_{test.id}_unlocked'):
+        return redirect('enter_test_password', pk=test.id)
     
-    if test.has_variants:
-        variant = get_object_or_404(TestVariant, pk=variant_id)
-        questions = test.questions.filter(variant=variant)
-    else:
-        questions = test.questions.all()
+    questions = test.questions.all()
     
     if request.method == 'POST':
         score = 0
@@ -323,9 +315,19 @@ def take_test(request, pk, variant_id=None):
     
     return render(request, 'test/take_test.html', {
         'test': test,
-        'questions': questions,
-        'variant_id': variant_id
+        'questions': questions
     })
+
+def enter_test_password(request, pk):
+    test = get_object_or_404(Test, pk=pk)
+    if request.method == 'POST':
+        entered_password = request.POST.get('password')
+        if entered_password == test.password:
+            request.session[f'test_{test.id}_unlocked'] = True
+            return redirect('take_test', pk=pk)
+        else:
+            messages.error(request, 'Неверный пароль!')
+    return render(request, 'test/enter_password.html', {'test': test})
 
 @login_required
 def test_results(request, pk, score):
@@ -375,4 +377,80 @@ def test_questions(request, pk):
     return render(request, 'test/questions.html', {
         'test': test,
         'questions': questions,
+    })
+
+
+from django.forms import inlineformset_factory
+from .models import Test, Question, Answer
+from .forms import TestForm, AnswerForm
+@staff_member_required
+def edit_test(request, pk):
+    test = get_object_or_404(Test, pk=pk)
+    
+    # Проверка авторства
+    if not (request.user.is_staff or request.user == test.author):
+        raise PermissionDenied
+
+    # Создаем формсеты
+    QuestionFormSet = inlineformset_factory(
+        Test,
+        Question,
+        fields=('text', 'image', 'question_type', 'points'),
+        extra=0,
+        can_delete=True
+    )
+    
+    AnswerFormSet = inlineformset_factory(
+        Question,
+        Answer,
+        form=AnswerForm,
+        extra=0,
+        min_num=5,
+        max_num=5,
+        can_delete=False
+    )
+
+    if request.method == 'POST':
+        test_form = TestForm(request.POST, instance=test)
+        question_formset = QuestionFormSet(
+            request.POST, 
+            request.FILES, 
+            instance=test,
+            prefix='questions'
+        )
+        
+        if test_form.is_valid() and question_formset.is_valid():
+            test_form.save()
+            questions = question_formset.save(commit=False)
+            
+            # Сохраняем вопросы и ответы
+            for question in questions:
+                question.save()
+                answer_formset = AnswerFormSet(
+                    request.POST,
+                    request.FILES,
+                    instance=question,
+                    prefix=f'answers_{question.id}'
+                )
+                if answer_formset.is_valid():
+                    answer_formset.save()
+            
+            messages.success(request, 'Тест успешно обновлен!')
+            return redirect('test_detail', pk=test.pk)
+    
+    else:
+        test_form = TestForm(instance=test)
+        question_formset = QuestionFormSet(instance=test, prefix='questions')
+        
+        # Инициализация формсетов ответов
+        for question in test.questions.all():
+            question.answer_formset = AnswerFormSet(
+                instance=question,
+                prefix=f'answers_{question.id}'
+            )
+
+    return render(request, 'test/edit_test.html', {
+        'test': test,
+        'test_form': test_form,
+        'question_formset': question_formset,
     })

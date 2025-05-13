@@ -25,8 +25,9 @@ urlpatterns = [
     path('tests/<int:pk>/take/', take_test, name='take_test'),
     path('tests/<int:pk>/results/<int:score>/', test_results, name='test_results'),
     path('tests/<int:pk>/delete/', staff_member_required(delete_test), name='delete_test'),
-    path('tests/<int:test_id>/select-variant/', select_variant, name='select_variant'),
-    path('tests/<int:pk>/take/<int:variant_id>/', take_test, name='take_test_variant'),
+    path('tests/<int:pk>/enter-password/', enter_test_password, name='enter_test_password'),
+    path('tests/<int:pk>/edit/', staff_member_required(edit_test), name='edit_test'),
+
 
     # Аутентификация
     path('register/', register_view, name='register'),

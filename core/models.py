@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.core.validators import MinValueValidator
 
 def lecture_file_path(instance, filename):
     return f'lectures/{instance.id}/{filename}'
@@ -72,7 +73,12 @@ class Lecture(models.Model):
 class Test(models.Model):
     title = models.CharField(max_length=200, verbose_name="Название теста")
     description = models.TextField(verbose_name="Описание", blank=True)
-    has_variants = models.BooleanField(default=False, verbose_name="Имеет варианты")
+    password = models.CharField(
+        max_length=100, 
+        blank=True, 
+        null=True, 
+        verbose_name="Пароль для доступа"
+    )
     time_limit = models.PositiveIntegerField(
         verbose_name="Лимит времени (мин)", 
         default=30,
@@ -93,22 +99,6 @@ class Test(models.Model):
         verbose_name_plural = "Тесты"
         ordering = ['-created_at']
 
-class TestVariant(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='variants')
-    name = models.CharField(max_length=100, verbose_name="Название варианта")
-    description = models.TextField(verbose_name="Описание", blank=True)
-    order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
-    is_active = models.BooleanField(default=True, verbose_name="Активен")
-
-    def __str__(self):
-        return f"{self.test.title} - {self.name}"
-
-    class Meta:
-        verbose_name = "Вариант теста"
-        verbose_name_plural = "Варианты тестов"
-        ordering = ['test', 'order']
-        unique_together = ['test', 'name']
-
 class Question(models.Model):
     QUESTION_TYPES = [
         ('single', 'Один правильный ответ'),
@@ -116,26 +106,44 @@ class Question(models.Model):
         ('text', 'Текстовый ответ'),
     ]
 
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='questions')
-    variant = models.ForeignKey(
-        TestVariant,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+    test = models.ForeignKey(
+        Test,
+        on_delete=models.CASCADE,
         related_name='questions',
-        verbose_name="Вариант"
+        verbose_name="Тест"
     )
     text = models.TextField(verbose_name="Текст вопроса")
+    image = models.ImageField(
+        upload_to='questions/images/',
+        blank=True,
+        null=True,
+        verbose_name="Изображение"
+    )
     question_type = models.CharField(
         max_length=10,
         choices=QUESTION_TYPES,
         default='single',
         verbose_name="Тип вопроса"
     )
-    order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
-    points = models.PositiveIntegerField(default=1, verbose_name="Баллы")
-    explanation = models.TextField(verbose_name="Объяснение", blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    order = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Порядок",
+        help_text="Порядок отображения (0 - первый)"
+    )
+    points = models.PositiveIntegerField(
+        default=1,
+        validators=[MinValueValidator(1)],
+        verbose_name="Баллы",
+        blank=True
+    )
+    explanation = models.TextField(
+        verbose_name="Объяснение",
+        blank=True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата создания"
+    )
 
     def __str__(self):
         return f"Вопрос {self.id} ({self.test.title})"
@@ -148,13 +156,37 @@ class Question(models.Model):
         verbose_name = "Вопрос"
         verbose_name_plural = "Вопросы"
         ordering = ['order']
+        indexes = [
+            models.Index(fields=['order', 'test']),
+        ]
+    
+    image = models.ImageField(upload_to='questions/', blank=True, null=True)
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
-    text = models.CharField(max_length=500, verbose_name="Текст ответа")
-    is_correct = models.BooleanField(default=False, verbose_name="Правильный ответ")
-    order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
-    points = models.PositiveIntegerField(default=0, verbose_name="Баллы за ответ")
+    question = models.ForeignKey(
+        Question, 
+        on_delete=models.CASCADE, 
+        related_name='answers',
+        verbose_name="Вопрос"
+    )
+    text = models.CharField(
+        max_length=500, 
+        verbose_name="Текст ответа"
+    )
+    image = models.ImageField(
+        upload_to='answers/images/',
+        blank=True,
+        null=True,
+        verbose_name="Изображение"
+    )
+    is_correct = models.BooleanField(
+        default=False, 
+        verbose_name="Правильный ответ"
+    )
+    order = models.PositiveIntegerField(
+        default=0, 
+        verbose_name="Порядок"
+    )
 
     def __str__(self):
         return f"Ответ {self.id} (вопрос {self.question.id})"
@@ -164,15 +196,11 @@ class Answer(models.Model):
         verbose_name_plural = "Ответы"
         ordering = ['order']
 
+    image = models.ImageField(upload_to='answers/', blank=True, null=True)
+
 class TestResult(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
-    variant = models.ForeignKey(
-        TestVariant,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
     score = models.PositiveIntegerField(verbose_name="Баллы")
     max_score = models.PositiveIntegerField(verbose_name="Максимальный балл")
     completed_at = models.DateTimeField(auto_now_add=True)
