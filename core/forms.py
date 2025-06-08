@@ -1,8 +1,15 @@
+#--------------------- Импорты -------------------------
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.forms import inlineformset_factory
-from .models import User, Lecture, Question, Answer, Test, Category, Tag, VideoLecture
+from .models import *
+
+
+#--------------------- Lecture Form -------------------------
+from django import forms
+from django.core.exceptions import ValidationError
+from .models import Lecture, Category, Tag
 
 class LectureForm(forms.ModelForm):
     description = forms.CharField(
@@ -17,34 +24,34 @@ class LectureForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        # Делаем поля необязательными
         self.fields['content'].required = False
         self.fields['category'].required = False
         self.fields['tags'].required = False
-        self.fields['grade'].initial = '1'
-        
+        self.fields['image'].required = False
+
+        # Для редактирования существующей лекции
         if self.instance and self.instance.pk:
             self.fields['file'].required = False
 
     def clean_file(self):
         uploaded_file = self.cleaned_data.get('file')
         
+        # При редактировании разрешаем не загружать новый файл
         if self.instance and self.instance.pk:
-            if not uploaded_file and self.instance.file:
+            if not uploaded_file:
                 return self.instance.file
         
-        if uploaded_file:
-            if not uploaded_file.name.lower().endswith(('.doc', '.docx')):
-                raise ValidationError("Только файлы формата .doc или .docx разрешены!")
-            return uploaded_file
-        
-        if not self.instance or not self.instance.pk:
+        # Для новой лекции проверяем обязательность файла
+        if not self.instance.pk and not uploaded_file:
             raise ValidationError("Необходимо загрузить файл лекции")
-        
+            
         return uploaded_file
 
     class Meta:
         model = Lecture
-        fields = ['title', 'description', 'content', 'image', 'file', 'grade', 'category', 'tags']
+        fields = ['title', 'description', 'content', 'image', 'file', 'category', 'tags']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -63,8 +70,10 @@ class LectureForm(forms.ModelForm):
                 'accept': 'image/*', 
                 'class': 'form-control'
             }),
-            'grade': forms.Select(attrs={'class': 'form-control'}),
-            'category': forms.Select(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={
+                'class': 'form-control',
+                'data-placeholder': 'Выберите категорию'
+            }),
             'tags': forms.SelectMultiple(attrs={
                 'class': 'form-control',
                 'data-placeholder': 'Выберите теги'
@@ -72,7 +81,6 @@ class LectureForm(forms.ModelForm):
         }
         labels = {
             'title': 'Название лекции',
-            'grade': 'Курс',
             'file': 'Файл лекции (DOC/DOCX)',
             'image': 'Обложка лекции',
             'content': 'Дополнительный контент',
@@ -80,6 +88,21 @@ class LectureForm(forms.ModelForm):
             'tags': 'Теги'
         }
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        
+        # Сохраняем автора только для новой лекции
+        if not instance.pk:
+            instance.author = self.initial.get('author')
+        
+        if commit:
+            instance.save()
+            self.save_m2m()
+            
+        return instance
+
+
+#--------------------- Test Form -------------------------
 class TestForm(forms.ModelForm):
     class Meta:
         model = Test
@@ -107,6 +130,8 @@ class TestForm(forms.ModelForm):
             'time_limit': 'Лимит времени (мин)'
         }
 
+
+#--------------------- Test Password Form -------------------------
 class TestPasswordForm(forms.Form):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
@@ -117,6 +142,7 @@ class TestPasswordForm(forms.Form):
     )
 
 
+#--------------------- Question Form -------------------------
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
@@ -125,9 +151,9 @@ class QuestionForm(forms.ModelForm):
             'text': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': 'Текст вопроса'  # Убрали лишний атрибут accept
+                'placeholder': 'Текст вопроса'
             }),
-            'image': forms.FileInput(attrs={  # Добавили виджет для изображения
+            'image': forms.FileInput(attrs={
                 'class': 'hidden',
                 'accept': 'image/*'
             })
@@ -145,10 +171,9 @@ class QuestionForm(forms.ModelForm):
             instance.save()
             self.save_m2m()
         return instance
-from django import forms
-from django.forms import inlineformset_factory
-from .models import Answer, Question
 
+
+#--------------------- Answer Form -------------------------
 class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
@@ -170,10 +195,11 @@ class AnswerForm(forms.ModelForm):
             'is_correct': 'Правильный ответ'
         }
 
+
+#--------------------- Answer FormSet -------------------------
 class BaseAnswerFormSet(forms.BaseInlineFormSet):
     def clean(self):
         super().clean()
-        # Проверка наличия хотя бы одного правильного ответа
         if any(self.errors):
             return
             
@@ -209,6 +235,8 @@ AnswerFormSet = inlineformset_factory(
     }
 )
 
+
+#--------------------- Register Form -------------------------
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(
         required=True,
@@ -250,6 +278,8 @@ class RegisterForm(UserCreationForm):
             raise ValidationError("Этот email уже используется")
         return email
 
+
+#--------------------- Login Form -------------------------
 class LoginForm(AuthenticationForm):
     username = forms.CharField(
         widget=forms.TextInput(attrs={
@@ -266,6 +296,8 @@ class LoginForm(AuthenticationForm):
         label="Пароль"
     )
 
+
+#--------------------- VideoLecture Form -------------------------
 class VideoLectureForm(forms.ModelForm):
     class Meta:
         model = VideoLecture
@@ -293,8 +325,76 @@ class VideoLectureForm(forms.ModelForm):
             'youtube_url': 'YouTube ссылка',
         }
     
-    def clean_youtube_url(self):
-        url = self.cleaned_data.get('youtube_url')
-        if not ('youtube.com/watch?v=' in url or 'youtu.be/' in url):
-            raise ValidationError("Пожалуйста, введите корректную ссылку на YouTube видео")
-        return url
+def clean_youtube_url(self):
+    url = self.cleaned_data.get('youtube_url')
+    
+    if not url:
+        raise ValidationError("Это поле обязательно для заполнения")
+        
+    if not ('youtube.com/watch?v=' in url or 'youtu.be/' in url):
+        raise ValidationError("Пожалуйста, введите корректную ссылку на YouTube видео")
+    
+    return url
+
+
+#--------------------- Presentation Form -------------------------
+class PresentationForm(forms.ModelForm):
+    class Meta:
+        model = Presentation
+        fields = ['title', 'description', 'file']
+
+    def clean_file(self):
+        file = self.cleaned_data.get('file')
+        if file:
+            ext = file.name.split('.')[-1].lower()
+            if ext != 'pdf':
+                raise ValidationError("Разрешены только PDF-файлы")
+            if file.size > 20 * 1024 * 1024:
+                raise ValidationError("Максимальный размер файла 20MB")
+        return file
+    
+
+#___________exercise form
+
+from django import forms
+from .models import Exercise
+
+class ExerciseForm(forms.ModelForm):
+    class Meta:
+        model = Exercise
+        fields = ['title', 'image', 'pdf_file']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500',
+                'placeholder': 'Введите название упражнения'
+            }),
+            'image': forms.ClearableFileInput(attrs={
+                'class': 'block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-green-50 file:text-green-700 hover:file:bg-green-100',
+                'accept': 'image/*'
+            }),
+            'pdf_file': forms.ClearableFileInput(attrs={
+                'class': 'block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-green-50 file:text-green-700 hover:file:bg-green-100',
+                'accept': '.pdf'
+            }),
+        }
+
+
+#dictionary______________________________________________
+
+from django import forms
+from .models import DictionaryEntry
+class DictionaryEntryForm(forms.ModelForm):
+    class Meta:
+        model = DictionaryEntry
+        fields = ['word', 'definition']
+        widgets = {
+            'word': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2 border rounded-lg mb-4',
+                'placeholder': 'Введите слово'
+            }),
+            'definition': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-2 border rounded-lg mb-4',
+                'placeholder': 'Введите определение',
+                'rows': 4
+            }),
+        }

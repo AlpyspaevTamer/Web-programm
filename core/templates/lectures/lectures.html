@@ -1,10 +1,66 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <!-- Заголовок и кнопка добавления -->
+<style>
+    body {
+        background-image: url('https://images.hdqwalls.com/download/horizon-zero-dawn-nature-mountains-trees-sky-4k-yj-3840x2160.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    @keyframes fade-in-down {
+        0% {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-down {
+        animation: fade-in-down 0.8s ease-out forwards;
+    }
+    
+    .lecture-image-container {
+        height: 12rem;
+        background-color: #f3f4f6;
+    }
+    
+    /* Анимация карточки */
+    .lecture-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .lecture-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Анимация для menu tap */
+    .menu-tap-link {
+        display: inline-block;
+        transition: transform 0.3s ease;
+    }
+    
+    .menu-tap-link:hover {
+        transform: translateX(5px);
+    }
+</style>
+
+<div class="container mx-auto px-4 py-8 animate-fade-in-down opacity-0">
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800">Все лекции</h1>
+        <h1 class="text-3xl font-bold text-white">
+            <!-- Анимированная ссылка "menu tap" -->
+            <a href="{% url 'home' %}" class="menu-tap-link text-white hover:text-gray-300 transition-colors duration-300">
+                menu tap
+            </a> 
+            <!-- Серая надпись "Все лекции" -->
+            &gt; <span class="text-gray-300">Все лекции</span>
+        </h1>
         {% if user.is_authenticated and user.is_staff %}
             <a href="{% url 'add_lecture' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,24 +71,27 @@
         {% endif %}
     </div>
 
-    <!-- Сетка карточек -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for lecture in lectures %}
-        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-200">
-            <!-- Обложка -->
-            {% if lecture.image %}
-            <img src="{{ lecture.image.url }}" 
-                 alt="{{ lecture.title }}" 
-                 class="w-full h-48 object-cover">
-            {% else %}
-            <div class="w-full h-48 bg-gray-100 flex items-center justify-center">
-                <span class="text-gray-400">Нет обложки</span>
+        <a href="{% url 'lecture_detail' lecture.id %}" class="lecture-card bg-white bg-opacity-90 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 block">
+            <!-- Блок изображения -->
+            <div class="lecture-image-container w-full overflow-hidden">
+                {% if lecture.image %}
+                    <img 
+                        src="{{ lecture.image.url }}" 
+                        alt="{{ lecture.title }}"
+                        class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    >
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center">
+                        <div class="bg-blue-100 w-24 h-24 rounded-full flex items-center justify-center">
+                            <span class="text-4xl font-bold text-blue-600">❤️</span>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
-            {% endif %}
 
-            <!-- Контент карточки -->
             <div class="p-6">
-                <!-- Метка класса -->
                 <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full 
                             {% if lecture.grade == '1-4' %}bg-green-100 text-green-800
                             {% elif lecture.grade == '5-6' %}bg-blue-100 text-blue-800
@@ -41,30 +100,21 @@
                     {{ lecture.get_grade_display }}
                 </span>
 
-                <!-- Название и описание -->
                 <h2 class="mt-2 text-xl font-bold text-gray-800">{{ lecture.title }}</h2>
                 <p class="mt-2 text-gray-600 line-clamp-2">{{ lecture.description }}</p>
 
-                <!-- Футер карточки -->
-                <div class="mt-4 flex justify-between items-center">
+                <div class="mt-4 text-right">
                     <span class="text-sm text-gray-500">
                         {{ lecture.created_at|date:"d.m.Y" }}
                     </span>
-                    <a href="{% url 'lecture_detail' lecture.id %}" 
-                       class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                        Подробнее
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </a>
                 </div>
             </div>
-        </div>
+        </a>
         {% empty %}
         <div class="col-span-full text-center py-12">
-            <p class="text-gray-500 text-lg">Лекции не найдены</p>
+            <p class="text-white text-lg drop-shadow">Лекции не найдены</p>
             {% if user.is_authenticated %}
-            <a href="{% url 'add_lecture' %}" class="mt-4 inline-block text-blue-600 hover:text-blue-800">
+            <a href="{% url 'add_lecture' %}" class="mt-4 inline-block text-blue-200 hover:text-blue-100">
                 Добавить первую лекцию
             </a>
             {% endif %}
@@ -72,10 +122,9 @@
         {% endfor %}
     </div>
 
-    <!-- Пагинация -->
     {% if is_paginated %}
     <div class="mt-8 flex justify-center">
-        <nav class="flex items-center gap-2">
+        <nav class="flex items-center gap-2 bg-white bg-opacity-80 px-4 py-2 rounded-lg shadow">
             {% if page_obj.has_previous %}
             <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 border rounded-lg hover:bg-gray-100">
                 Назад
@@ -94,13 +143,5 @@
         </nav>
     </div>
     {% endif %}
-
-    <!-- Фиксированная кнопка "На главную" в правом нижнем углу -->
-    <a href="{% url 'home' %}" 
-       class="fixed top-12 left-12 bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all hover:shadow-xl hover:scale-105">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-        </svg>
-    </a>
 </div>
 {% endblock %}

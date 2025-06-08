@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'core',
     'django_filters',
     'crispy_forms',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +68,22 @@ MIDDLEWARE = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+USE_I18N = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'alpyspaevtamer@gmail.com'
+EMAIL_HOST_PASSWORD = 'gkol jqsf qcgs nzvd'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SITE_ID = 1
+
+SITE_NAME = "MyLocalSite"
+
+X_FRAME_OPTIONS = 'ALLOW-FROM https://view.officeapps.live.com/'
+CORS_ALLOWED_ORIGINS = ["https://view.officeapps.live.com"]
 
 ROOT_URLCONF = 'core.urls'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -158,3 +175,5 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
 AUTH_USER_MODEL = 'core.User'
+
+CHAT_MESSAGE_LIMIT = 50
